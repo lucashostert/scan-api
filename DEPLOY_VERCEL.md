@@ -91,15 +91,26 @@ npm install -g vercel
 
 3. **Configure Environment Variables:**
 
-   Adicione 3 variáveis:
+   Na página de configuração do projeto, vá em **Environment Variables** e adicione 3 variáveis:
 
+   **Nome:** `FIREBASE_PROJECT_ID`  
+   **Value:** `seu-project-id` (encontrado no arquivo JSON baixado)
+   
+   **Nome:** `FIREBASE_CLIENT_EMAIL`  
+   **Value:** `firebase-adminsdk-xxxxx@seu-projeto.iam.gserviceaccount.com`
+   
+   **Nome:** `FIREBASE_PRIVATE_KEY`  
+   **Value:** Cole a chave privada completa do JSON:
    ```
-   FIREBASE_PROJECT_ID = seu-project-id
-   FIREBASE_CLIENT_EMAIL = firebase-adminsdk-xxxxx@seu-projeto.iam.gserviceaccount.com
-   FIREBASE_PRIVATE_KEY = -----BEGIN PRIVATE KEY-----\nMIIEvQIBA...\n-----END PRIVATE KEY-----
+   -----BEGIN PRIVATE KEY-----
+   MIIEvQIBADANBgkqhkiG9w0BAQEF...
+   -----END PRIVATE KEY-----
    ```
 
-   ⚠️ **IMPORTANTE:** A `FIREBASE_PRIVATE_KEY` deve incluir `\n` para quebras de linha!
+   ⚠️ **IMPORTANTE:** 
+   - Cole a chave EXATAMENTE como está no JSON (com quebras de linha)
+   - Marque como **Secret** (não é visível depois)
+   - Aplique para **Production**, **Preview** e **Development**
 
 4. **Deploy:**
    - Clique em "Deploy"
