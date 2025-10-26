@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de API</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #0f0;
+            border: none;
+            color: #000;
+        }
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de API - Vercel</h1>
+    
+    <div>
+        <button onclick="testAPI('/api/test')">Testar /api/test</button>
+        <button onclick="testAPI('/api/areas')">Testar /api/areas</button>
+        <button onclick="testAPI('/api/sessions')">Testar /api/sessions</button>
+    </div>
+    
+    <h2>Resultado:</h2>
+    <pre id="result">Clique em um botão para testar...</pre>
+    
+    <script>
+        async function testAPI(endpoint) {
+            const result = document.getElementById('result');
+            result.innerHTML = `⏳ Testando: ${endpoint}...`;
+            
+            try {
+                const response = await fetch(endpoint);
+                const contentType = response.headers.get('content-type');
+                
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                result.innerHTML = `
+<span class="success">✅ SUCESSO!</span>
+
+URL: ${endpoint}
+Status: ${response.status} ${response.statusText}
+Content-Type: ${contentType}
+
+Resposta:
+${JSON.stringify(data, null, 2)}
+                `;
+            } catch (error) {
+                result.innerHTML = `
+<span class="error">❌ ERRO!</span>
+
+URL: ${endpoint}
+Erro: ${error.message}
+
+Stack:
+${error.stack}
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
