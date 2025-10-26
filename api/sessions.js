@@ -50,9 +50,21 @@ export default async function handler(req, res) {
 
     const sessions = []
     snapshot.forEach(doc => {
+      const data = doc.data()
+      
+      // Filtrar campos - remover dados de sincronização
+      const {
+        sincronizadoEm,
+        lastSyncAttempt,
+        syncStatus,
+        ...cleanData
+      } = data
+      
       sessions.push({
         id: doc.id,
-        ...doc.data()
+        ...cleanData,
+        // Garantir que a data do scan está presente
+        scanDate: data.startTime || data.createdAt || Date.now()
       })
     })
 

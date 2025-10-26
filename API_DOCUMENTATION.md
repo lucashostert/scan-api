@@ -201,10 +201,10 @@ GET /api/sessions
       "tipo": "RFID",
       "startTime": 1698019200000,
       "endTime": 1698022800000,
+      "scanDate": 1698019200000,
       "tagsUnicas": 150,
       "totalLeituras": 300,
       "sincronizado": true,
-      "sincronizadoEm": 1698023000000,
       "items": {
         "TAG001": {
           "codigo": "TAG001",

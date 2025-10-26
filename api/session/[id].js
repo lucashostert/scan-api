@@ -48,11 +48,23 @@ export default async function handler(req, res) {
       })
     }
 
+    const data = doc.data()
+    
+    // Filtrar campos - remover dados de sincronização
+    const {
+      sincronizadoEm,
+      lastSyncAttempt,
+      syncStatus,
+      ...cleanData
+    } = data
+
     res.status(200).json({
       success: true,
       data: {
         id: doc.id,
-        ...doc.data()
+        ...cleanData,
+        // Garantir que a data do scan está presente
+        scanDate: data.startTime || data.createdAt || Date.now()
       }
     })
   } catch (error) {
