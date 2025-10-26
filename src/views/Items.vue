@@ -35,20 +35,6 @@
       >
         Código de Barras
       </button>
-      <button
-        @click="filterSync = filterSync === 'SINCRONIZADO' ? 'TODOS' : 'SINCRONIZADO'"
-        class="px-4 py-2 rounded-full text-sm font-medium transition-colors"
-        :class="filterSync === 'SINCRONIZADO' ? 'bg-secondary text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-      >
-        Sincronizados
-      </button>
-      <button
-        @click="filterSync = filterSync === 'PENDENTE' ? 'TODOS' : 'PENDENTE'"
-        class="px-4 py-2 rounded-full text-sm font-medium transition-colors"
-        :class="filterSync === 'PENDENTE' ? 'bg-danger text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-      >
-        Pendentes
-      </button>
     </div>
 
     <!-- Result Count -->
@@ -94,9 +80,8 @@
                 {{ session.tipo }}
               </span>
               <span
-                class="inline-block w-3 h-3 rounded-full"
-                :class="session.sincronizado ? 'bg-secondary' : 'bg-danger'"
-                :title="session.sincronizado ? 'Sincronizado' : 'Pendente'"
+                class="inline-block w-3 h-3 rounded-full bg-secondary"
+                title="Sincronizado"
               ></span>
             </div>
             <div class="flex items-center gap-4 text-sm text-gray-600">
@@ -125,13 +110,13 @@
         >
           <h4 class="font-semibold mb-3">Itens Escaneados:</h4>
           
-          <div v-if="!session.items || Object.keys(session.items).length === 0" class="text-center py-4 text-gray-500">
+          <div v-if="!getFilteredItems(session).length" class="text-center py-4 text-gray-500">
             Nenhum item encontrado
           </div>
 
           <div v-else class="space-y-2">
             <div
-              v-for="(item, codigo) in session.items"
+              v-for="(item, codigo) in getFilteredItems(session)"
               :key="codigo"
               class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
             >
@@ -170,6 +155,16 @@ export default {
       expandedSessions: [],
       loading: true,
       unsubscribe: null
+    }
+  },
+  watch: {
+    searchQuery(newVal) {
+      // Auto-expandir quando houver busca
+      if (newVal.trim()) {
+        this.expandedSessions = this.filteredSessions.map(s => s.id)
+      } else {
+        this.expandedSessions = []
+      }
     }
   },
   computed: {
@@ -238,6 +233,40 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       })
+    },
+    isSearchingForItemCode() {
+      if (!this.searchQuery.trim()) return false
+      const query = this.searchQuery
+      
+      // Se tem números, provavelmente é código
+      if (/\d/.test(query)) return true
+      
+      // Se tem caracteres especiais típicos de códigos
+      if (/[-_/\\.]/.test(query)) return true
+      
+      // Se tem letras E números misturados
+      if (/[a-zA-Z]/.test(query) && /\d/.test(query)) return true
+      
+      return false
+    },
+    getFilteredItems(session) {
+      if (!session.items) return []
+      
+      const items = Object.entries(session.items).map(([codigo, item]) => ({
+        ...item,
+        codigo: item.codigo || codigo
+      }))
+      
+      // Se não está buscando por código, mostra todos
+      if (!this.isSearchingForItemCode()) {
+        return items
+      }
+      
+      // Filtrar apenas itens que correspondem à busca
+      const query = this.searchQuery.toLowerCase()
+      return items.filter(item => 
+        item.codigo?.toLowerCase().includes(query)
+      )
     }
   }
 }
